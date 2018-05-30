@@ -1,0 +1,28 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+            "folder_exclude_patterns": ["__pycache__"],
+			"file_exclude_patterns": [".*"]
+		}
+	],
+	"settings":
+	{
+		"translate_tabs_to_spaces": true
+	},
+	"build_systems":
+    [
+        {
+            "name": "Custom",
+            "selector": "source.python",
+            "cmd": [
+            	"python", 
+            	"-u", // see https://stackoverflow.com/a/21321190/1607485
+            	"-m", 
+            	"scratch"
+            ],
+            "working_dir": "${project_path}",
+        }
+    ]
+}
