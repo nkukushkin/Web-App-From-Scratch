@@ -94,7 +94,6 @@ class HTTPWorker(Thread):
             finally:
                 self.connection_queue.task_done()
 
-
     def handle_client(self, client_sock: socket.socket, client_addr: typing.Tuple[str, int]) -> None:
         with client_sock:
             try:
@@ -126,42 +125,6 @@ class HTTPWorker(Thread):
             else:
                 response = Response(status="404 Not Found", content="Not Found")
                 response.send(client_sock)
-
-def app(request: Request) -> Response:
-    return Response(status="200 OK", content="Hello!")
-
-def serve_file(sock: socket.socket, path: str) -> None:
-    """Given a socket and the relative path to a file (relative to
-    SERVER_SOCK), send that file to the socket if it exists.  If the
-    file doesn't exist, send a "404 Not Found" response.
-    """
-    if path == "/":
-        path = "/index.html"
-
-    abspath = os.path.abspath(os.path.join(SERVER_ROOT, path.lstrip("/")))
-
-    if not abspath.startswith(SERVER_ROOT):
-        response = Response(status="404 Not Found", content="Not Found")
-        response.send(sock)
-        return
-
-    try:
-        with open(abspath, "rb") as f:
-            stat = os.fstat(f.fileno())
-            content_type, encoding = mimetypes.guess_type(abspath)
-            if content_type is None:
-                content_type = "application/octet-stream"
-
-            if encoding is not None:
-                content_type += f"; charset={encoding}"
-
-            response = Response(status="200 OK", body=f)
-            response.headers.add("content-type", content_type)
-            response.send(sock)
-    except FileNotFoundError:
-        response = Response(status="404 Not Found", content="Not Found")
-        response.send(sock)
-        return
 
 def serve_static(server_root: str) -> HandlerT:
     """Generate a request handler that serves file off disk
